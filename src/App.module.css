@@ -1,0 +1,51 @@
+.box{
+  background-color: #C4C4C4;
+  min-width: 10px;
+  min-height: 10px;
+  position: relative;
+}
+
+.resize{
+  position: absolute;
+  width: 8px;
+  height: 8px;
+
+}
+
+.resize:nth-of-type(odd) {
+  left: -4px;
+}
+
+.resize:nth-of-type(even) {
+  right: -4px;
+}
+
+.resize:nth-of-type(n + 3) {
+  bottom: -4px;
+}
+
+.resize:nth-of-type(-n + 2) {
+  top: -4px;
+}
+
+.rotate{
+  position: absolute;
+  width: 15px;
+  height: 15px;
+}
+
+.rotate:nth-of-type(odd) {
+  left: -10px;
+}
+
+.rotate:nth-of-type(even) {
+  right: -10px;
+}
+
+.rotate:nth-of-type(n + 5) {
+  bottom: -10px;
+}
+
+.rotate:nth-of-type(n + 7) {
+  top: -10px;
+}

@@ -35,17 +35,17 @@
 }
 
 .rotate:nth-of-type(odd) {
-  left: -10px;
+  left: -8.3px;
 }
 
 .rotate:nth-of-type(even) {
-  right: -10px;
+  right: -8.3px;
 }
 
 .rotate:nth-of-type(n + 5) {
-  bottom: -10px;
+  bottom: -8.3px;
 }
 
 .rotate:nth-of-type(n + 7) {
-  top: -10px;
+  top: -8.3px;
 }

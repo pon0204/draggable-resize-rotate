@@ -6,12 +6,14 @@ export const useInteractJS = () => {
   const [_position,setPosition] = useState({
     x: 500,
     y: 100,
-    width: 5,
-    height: 5,
+    width: 10,
+    height: 10,
+  })
+
+  const [_origin,setOrigin] = useState({
     originX: 'center',
     originY: 'center'
   })
-
   const [angle,setAngle] = useState(0)
   const [isEnabled, setEnable] = useState(false)
 
@@ -21,7 +23,11 @@ export const useInteractJS = () => {
   const rotateBtn_3 = useRef(null)
   const rotateBtn_4 = useRef(null)
 
-  let { x, y, width, height,originX,originY} = _position
+  let { x, y, width, height } = _position
+  let Left = '#resize_upperLeft,#resize_lowerLeft'
+  let Right = '#resize_upperRight,#resize_lowerRight'
+  let Top = '#resize_upperLeft,#resize_upperRight'
+  let Bottom = '#resize_lowerRight,#resize_lowerLeft'
 
   const enable = () => {
     interact(interactRef.current)
@@ -39,48 +45,24 @@ export const useInteractJS = () => {
     })
     .resizable({
       // resize from all edges and corners
-      edges: { left: true, right: true, bottom: true, top: true },
+      edges: { left: Left, right: Right, bottom: Bottom, top: Top},
+
+      onstart: (event) =>{
+      },
       onmove: (event) => {
-        let box = event.target
-        let angle = box.getAttribute('data-angle');
-        // originX = 'left'
-        // originY = 'top'
+        const box = event.target
+        const angle = box.getAttribute('data-angle');
         //  角度によって、リサイズする向きを変更
-        if( 45 > angle || 225 > angle && angle >= 136 || angle >= 316){
-          console.log(event.deltaRect)
-          console.log(width)
+
           width += event.deltaRect.width / 5
           height += event.deltaRect.height / 5
-          
-
-
-          // width = event.rect.width 
-          // height = event.rect.height
-          // leftの方向にずれ続ける
-          // x += event.deltaRect.left
-          // topの方向にずれ続ける
-          // y += event.deltaRect.top
-        }else{
-          width += event.deltaRect.height / 5
-          height += event.deltaRect.width / 5
-          // width = event.rect.height
-          // height = event.rect.width
-          // そっちの方向にずれ続けるんや
-          // console.log(event.deltaRect)
-          // x += event.deltaRect.left
-          // y += event.deltaRect.top
-        }
-        // top -
-        // right +
-        // bottom + 
-        // left -
+          width = 2  > width ? 2 : width
+          height = 2  > height ? 2 : height
         setPosition({
           x,
           y,
           width,
           height,
-          originX,
-          originY
         })
       }
     })
@@ -112,7 +94,7 @@ export const useInteractJS = () => {
 
     const dragOnStart = (event) =>{
       let box = event.target.parentElement;
-      let rect = box.getBoundingClientRect();
+      let rect = box.getBoundingClientRect();      
     // 四角形の中心座標
       box.setAttribute('data-center-x', rect.left + rect.width / 2);
       box.setAttribute('data-center-y', rect.top + rect.height / 2);    
@@ -125,33 +107,17 @@ export const useInteractJS = () => {
         y,
         width,
         height,
-        originX,
-        originY
       })
     }
 
     const dragOnMove = (event) => {
       const angle = getDragAngle(event);
       setAngle(angle)
-      
     }
     
     const dragOnEnd = (event) => {
       const box = event.target.parentElement;
-      const rect = box.getBoundingClientRect();
       box.setAttribute('data-angle', getDragAngle(event));
-      // x = rect.x
-      // y = rect.y
-      // console.log(rect)
-      // console.log(y)
-      // // width = rect.width
-      // // height = rect.height
-      // setPosition({
-      //   x,
-      //   y,
-      //   width,
-      //   height,
-      // })
     }
   }
 
@@ -169,7 +135,6 @@ export const useInteractJS = () => {
     center.x - event.clientX);
   // 角度に変換
   let degree = radian * ( 180 / Math.PI ) ;
-  
   degree -= startAngle
   // 角度を+の値に変換
   degree = degree % 360.0
@@ -208,15 +173,18 @@ return {
     // width: '100px',
     // height:'100px',
     position: 'absolute',
-    transformOrigin: `${_position.originX} ${_position.originY}`
+    transformOrigin: `${_origin.originX} ${_origin.originY}`
   },
   styleResize: {
-    transform: `scale(${_position.width / 100},${_position.height / 100})`,
+    transform: 'scale(0.1,0.1)',
     // outline: '2px solid #4EA0EC',
     // backgroundColor:'#ffffff'
   },
   styleRotate: {
-    transform: `scale(${_position.width / 100},${_position.height / 100})`,
+    transform: `scale(0.1,0.1)`,
+    // transform: `scale(${_position.width / 100},${_position.height / 100})`,
+    // outline: '2px solid #4EA0EC',
+    // backgroundColor:'#ffffff',
   },
   isEnabled,
   enable: () => setEnable(true),

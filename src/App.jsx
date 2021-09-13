@@ -1,5 +1,5 @@
 import styles from './App.module.css'
-import { useInteractJS } from './hooks'
+import { useInteractJS } from './useInteract'
 
 const App = () => {
   const interact = useInteractJS()  
@@ -20,6 +20,10 @@ const App = () => {
           // outline: interact.isEnabled && '2px solid #4EA0EC'
         }}
         className={styles.box}
+        edges-left='#resize_upperLeft,#resize_lowerLeft'
+        edges-right='#resize_upperRight,#resize_lowerRight'
+        edges-top='#resize_upperLeft,#resize_upperRight'
+        edges-bottom='#resize_lowerRight,#resize_lowerLeft'
         >
         {interact.isEnabled &&
         <>

@@ -27,10 +27,10 @@ const App = () => {
         >
         {interact.isEnabled &&
         <>
-          <div className={styles.resize} id='resize_upperLeft' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_upperRight' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_lowerLeft' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_lowerRight' style={{...interact.styleResize}}></div>
+          <div className={styles.resize} id='resize_upperLeft' style={{...interact.styleResize}}>左上</div>
+          <div className={styles.resize} id='resize_upperRight' style={{...interact.styleResize}}>右上</div>
+          <div className={styles.resize} id='resize_lowerLeft' style={{...interact.styleResize}}>左下</div>
+          <div className={styles.resize} id='resize_lowerRight' style={{...interact.styleResize}}>右下</div>
           <div ref={interact.refRotate_1} className={styles.rotate} style={{...interact.styleRotate}}></div>
           <div ref={interact.refRotate_2} className={styles.rotate} style={{...interact.styleRotate}}></div>
           <div ref={interact.refRotate_3} className={styles.rotate} style={{...interact.styleRotate}}></div>

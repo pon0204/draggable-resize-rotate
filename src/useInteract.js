@@ -56,6 +56,118 @@ export const useInteractJS = () => {
         bottom:interactRef.current.getAttribute('edges-bottom'),
         top: interactRef.current.getAttribute('edges-top')
       },
+      // 質問用追加
+      onstart: (event) => {
+
+        const edges = event.edges
+        console.log(edges)
+        const rect = event.target.getBoundingClientRect();  
+        let boolX
+        let boolY
+        switch(true){
+          case edges.right === true && edges.top === true :
+            // 左下に基準点を変更
+            boolX = originX !== 'left'
+            boolY = originY !== 'bottom'
+            originX = 'left'
+            originY = 'bottom'
+            // 反転を防ぐためにポジションを変更
+            switch(true){
+              case boolX && boolY:
+                x = rect.x
+                y = rect.y + rect.height
+              break;
+              case boolX:
+                // x = rect.x + rect.width - 10
+                x = rect.x
+              break;
+              case boolY:
+                y = rect.y + rect.height - 10
+              break;
+              default:
+            }
+            break;
+          case edges.right === true && edges.bottom === true :
+            // 左上に基準点を変更
+            boolX = originX !== 'left'
+            boolY = originY !== 'top'
+            originX = 'left'
+            originY = 'top'
+            // 反転を防ぐためにポジションを変更
+            switch(true){
+              case boolX && boolY:
+                // x = rect.x + rect.width - 10
+                // y = rect.y + rect.height - 10
+                x = rect.x
+                y = rect.y
+              break
+              case boolX:
+                // x = rect.x + rect.width - 10
+                x = rect.x
+              break;
+              case boolY:
+                // y = rect.y + rect.height - 10
+                y = rect.y
+              break;
+              default:
+            }
+            break;
+          case edges.left === true && edges.top === true :
+            // 右下に基準点を変更
+            boolX = originX !== 'right'
+            boolY = originY !== 'bottom'
+            originX = 'right'
+            originY = 'bottom'
+            // 反転を防ぐためにポジションを変更
+            switch(true){
+              case boolX && boolY:
+                x = rect.x + rect.width - 10
+                y = rect.y + rect.height - 10
+              break;
+              case boolX:
+                x = rect.x + rect.width - 10
+              break;
+              case boolY:
+                y = rect.y + rect.height - 10
+              break;
+              default:
+            }
+            break;
+          case edges.left === true && edges.bottom === true :
+            // 右上に基準点を変更
+            boolX = originX !== 'right'
+            boolY = originY !== 'top'
+            originX = 'right'
+            originY = 'top'
+            // 反転を防ぐためにポジションを変更
+            switch(true){
+              case boolX && boolY:
+                x = rect.x + rect.width - 10
+                y = rect.y
+              break;
+              case boolX:
+                x = rect.x + rect.width - 10
+              break;
+              case boolY:
+                y = rect.y
+              break;
+              default:
+            }
+            break;
+            default:
+        }
+        setPosition({
+          width,
+          height,
+          x,
+          y
+        })
+        setOrigin({ 
+          originX,
+          originY
+        })
+        // 図形が前の基準点を軸に反転してしまう
+      },  
       onmove: (event) => {
         const box = event.target
         const angle = box.getAttribute('data-angle');
@@ -87,6 +199,8 @@ export const useInteractJS = () => {
           width,
           height,
         })
+      },
+      onend: (event) => {
       }
     })
 
@@ -117,13 +231,22 @@ export const useInteractJS = () => {
       })
     
     const dragOnStart = (event) =>{
-      let box = event.target.parentElement;
-      let rect = box.getBoundingClientRect();      
+      const box = event.target.parentElement;
+
+      const rect = box.getBoundingClientRect();      
+      originX = 'center'
+      originY = 'center'
+      setOrigin({ 
+        originX,
+        originY
+      })
     // 四角形の中心座標
       box.setAttribute('data-center-x', rect.left + rect.width / 2);
       box.setAttribute('data-center-y', rect.top + rect.height / 2);    
       // スタート時の角度保存
       box.setAttribute('data-angle', getDragAngle(event));
+      x = rect.x - 5 + rect.width / 2 
+      y = rect.y - 5 + rect.height / 2
       setPosition({
         x,
         y,

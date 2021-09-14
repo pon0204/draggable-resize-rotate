@@ -2,6 +2,10 @@ import { useRef, useEffect, useState } from 'react'
 import interact from 'interactjs'
 
 export const useInteractJS = () => {
+  const Left = '#resize_upperLeft,#resize_lowerLeft'
+  const Right = '#resize_upperRight,#resize_lowerRight'
+  const Top = '#resize_upperLeft,#resize_upperRight'
+  const Bottom = '#resize_lowerRight,#resize_lowerLeft'
 
   const [_position,setPosition] = useState({
     x: 500,
@@ -15,6 +19,13 @@ export const useInteractJS = () => {
     originY: 'center'
   })
 
+  const [_corner,setCorner] = useState({
+    left: Left,
+    right: Right,
+    top: Top,
+    bottom: Bottom
+  })
+
   const [angle,setAngle] = useState(0)
   const [isEnabled, setEnable] = useState(false)
 
@@ -23,14 +34,11 @@ export const useInteractJS = () => {
   const rotateBtn_2 = useRef(null)
   const rotateBtn_3 = useRef(null)
   const rotateBtn_4 = useRef(null)
+  
 
   let { x, y, width, height } = _position
   let { originX,originY} = _origin
-
-  const Left = '#resize_upperLeft,#resize_lowerLeft'
-  const Right = '#resize_upperRight,#resize_lowerRight'
-  const Top = '#resize_upperLeft,#resize_upperRight'
-  const Bottom = '#resize_lowerRight,#resize_lowerLeft'
+  let {left,right,top,bottom} = _corner
 
   const enable = () => {
     // 並進 //
@@ -49,128 +57,245 @@ export const useInteractJS = () => {
     })
     // 拡大縮小 //
     .resizable({
-      // リサイズする向きを角度によって変更  ※変数やstateでは反映されなかったので属性で指定
+      // リサイズする向きを角度によって変更
       edges: { 
-        left: interactRef.current.getAttribute('edges-left'),
-        right: interactRef.current.getAttribute('edges-right'), 
-        bottom:interactRef.current.getAttribute('edges-bottom'),
-        top: interactRef.current.getAttribute('edges-top')
+        left:  left,
+        right: right,
+        top: top,
+        bottom: bottom
       },
-      // 質問用追加
+      // リサイズ開始時
+      // 「処理の流れ】 リサイズの開始位置を取得 → 基準点を変更 → 基準点に合わせてポジションを修正
       onstart: (event) => {
+        const box = event.target
+        const corner = event.edges
+        const rect = box.getBoundingClientRect();  
+        const angle = box.getAttribute('data-angle');
+        const clientWidth = width * 10
+        const clientHight = height * 10
+        const radian = angle * ( Math.PI / 180 );
+        let heightLineHeight = clientHight * Math.sin(radian)
+            heightLineHeight = heightLineHeight > 0 ? heightLineHeight : -(heightLineHeight)
+        let heightLineWidth = clientWidth * Math.sin(radian)        
+            heightLineWidth = heightLineWidth > 0 ? heightLineWidth : -(heightLineWidth)
+        let baseLineHeight = clientHight * Math.cos(radian)
+            baseLineHeight = baseLineHeight > 0 ? baseLineHeight : -(baseLineHeight)
+        let baseLineWidth = clientWidth * Math.cos(radian)      
+            baseLineWidth = baseLineWidth > 0 ? baseLineWidth : -(baseLineWidth)
 
-        const edges = event.edges
-        console.log(edges)
-        const rect = event.target.getBoundingClientRect();  
-        let boolX
-        let boolY
         switch(true){
-          case edges.right === true && edges.top === true :
-            // 左下に基準点を変更
-            boolX = originX !== 'left'
-            boolY = originY !== 'bottom'
+        case 45 > angle || angle >= 315:
+          switch(true){
+            case corner.right === true && corner.top === true :
+              originX = 'left'
+              originY = 'bottom'
+              if(45 > angle){
+                x = rect.x
+                y = rect.y + rect.height - heightLineWidth - 10
+              }else{
+                x = rect.x + heightLineHeight
+                y = rect.y + rect.height - 10
+              }
+              break;
+            case corner.right === true && corner.bottom === true :
+              originX = 'left'
+              originY = 'top'
+              if(45 > angle){
+                x = rect.x + heightLineHeight
+                y = rect.y
+              }else{
+                x = rect.x
+                y = rect.y + heightLineWidth
+              }
+              break;
+            case corner.left === true && corner.top === true :
+              originX = 'right'
+              originY = 'bottom'
+              if(45 > angle){
+                x = rect.x + rect.width - 10 - heightLineHeight
+                y = rect.y + rect.height - 10
+              }else{
+                x = rect.x + rect.width - 10
+                y = rect.y + rect.height - 10 - heightLineWidth
+              }
+              break;
+            case corner.left === true && corner.bottom === true :
+              originX = 'right'
+              originY = 'top'
+              if(45 > angle){
+                x = rect.x + rect.width - 10
+                y = rect.y + heightLineWidth
+              }else{
+                x = rect.x + rect.width - 10 - heightLineHeight
+                y = rect.y
+              }
+              break;
+              default:
+          }  
+        break;
+        case 135 > angle && angle >= 45:
+          switch(true){
+          case corner.right === true && corner.top === true:
+            originX = 'left'
+            originY = 'top'
+            if(135 > angle && angle >= 90){
+              x = rect.x + rect.width
+              y = rect.y + baseLineHeight
+            }else{
+              x = rect.x + rect.width - baseLineWidth 
+              y = rect.y
+            }
+            break;
+          case corner.right === true && corner.bottom === true :
+            originX = 'right'
+            originY = 'top'
+            if(135 > angle && angle >= 90){
+              x = rect.x + rect.width - 10 - baseLineWidth
+              y = rect.y + rect.height
+            }else{
+              x = rect.x + rect.width - 10
+              y = rect.y + rect.height - baseLineHeight
+            }
+            break;
+          case corner.left === true && corner.top === true :
             originX = 'left'
             originY = 'bottom'
-            // 反転を防ぐためにポジションを変更
-            switch(true){
-              case boolX && boolY:
-                x = rect.x
+            if(135 > angle && angle >= 90){
+              x = rect.x + baseLineWidth
+              y = rect.y - 10
+            }else{
+              x = rect.x
+              y = rect.y - 10 + baseLineHeight
+            }
+            break;
+          case corner.left === true && corner.bottom === true :
+            originX = 'right'
+            originY = 'bottom'
+            if(135 > angle && angle >= 90){
+              x = rect.x - 10
+              y = rect.y + rect.height - 10 - baseLineHeight
+            }else{
+              x = rect.x - 10 + baseLineWidth
+              y = rect.y + rect.height - 10
+            }
+            break;
+            default:
+          }
+        break
+        case 225 > angle && angle >= 135:
+          switch(true){
+            case corner.right === true && corner.top === true :
+              originX = 'right'
+              originY = 'top'
+              if(225 > angle && angle > 180){
+                  x = rect.x - 10
+                  y = rect.y + rect.height - heightLineWidth
+              }else{
+                x = rect.x - 10 + heightLineHeight
                 y = rect.y + rect.height
+              }
               break;
-              case boolX:
-                // x = rect.x + rect.width - 10
-                x = rect.x
+            case corner.right === true && corner.bottom === true :
+              originX = 'right'
+              originY = 'bottom'
+              if(225 > angle && angle > 180){
+                x = rect.x - 10 + heightLineHeight
+                y = rect.y - 10
+              }else{
+                x = rect.x - 10
+                y = rect.y - 10 + heightLineWidth
+              }
               break;
-              case boolY:
-                y = rect.y + rect.height - 10
+            case corner.left === true && corner.top === true :
+              originX = 'left'
+              originY = 'top'
+              if(225 > angle && angle > 180){
+                x = rect.x + rect.width - heightLineHeight
+                y = rect.y + rect.height
+              }else{
+                x = rect.x + rect.width
+                y = rect.y + rect.height - heightLineWidth
+              }
               break;
-              default:
-            }
-            break;
-          case edges.right === true && edges.bottom === true :
-            // 左上に基準点を変更
-            boolX = originX !== 'left'
-            boolY = originY !== 'top'
-            originX = 'left'
-            originY = 'top'
-            // 反転を防ぐためにポジションを変更
-            switch(true){
-              case boolX && boolY:
-                // x = rect.x + rect.width - 10
-                // y = rect.y + rect.height - 10
-                x = rect.x
-                y = rect.y
-              break
-              case boolX:
-                // x = rect.x + rect.width - 10
-                x = rect.x
-              break;
-              case boolY:
-                // y = rect.y + rect.height - 10
-                y = rect.y
-              break;
-              default:
-            }
-            break;
-          case edges.left === true && edges.top === true :
-            // 右下に基準点を変更
-            boolX = originX !== 'right'
-            boolY = originY !== 'bottom'
-            originX = 'right'
-            originY = 'bottom'
-            // 反転を防ぐためにポジションを変更
-            switch(true){
-              case boolX && boolY:
-                x = rect.x + rect.width - 10
-                y = rect.y + rect.height - 10
-              break;
-              case boolX:
-                x = rect.x + rect.width - 10
-              break;
-              case boolY:
-                y = rect.y + rect.height - 10
+            case corner.left === true && corner.bottom === true :
+              originX = 'left'
+              originY = 'bottom'
+              if(225 > angle && angle > 180){
+                x = rect.x + rect.width 
+                y = rect.y - 10 + heightLineWidth
+              }else{
+                x = rect.x + rect.width - heightLineHeight
+                y = rect.y - 10
+              }
               break;
               default:
-            }
-            break;
-          case edges.left === true && edges.bottom === true :
-            // 右上に基準点を変更
-            boolX = originX !== 'right'
-            boolY = originY !== 'top'
-            originX = 'right'
-            originY = 'top'
-            // 反転を防ぐためにポジションを変更
-            switch(true){
-              case boolX && boolY:
+          }
+        break;
+        case 315 > angle && angle >= 225:
+          switch(true){
+            case corner.right === true && corner.top === true :
+              originX = 'right'
+              originY = 'bottom'
+              if(315 > angle && angle >= 275){
                 x = rect.x + rect.width - 10
-                y = rect.y
+                y = rect.y - 10 + baseLineHeight
+              }else{
+                x = rect.x + rect.width - 10 - baseLineWidth 
+                y = rect.y - 10
+              }
               break;
-              case boolX:
-                x = rect.x + rect.width - 10
+            case corner.right === true && corner.bottom === true :
+              originX = 'left'
+              originY = 'bottom'
+              if(315 > angle && angle >= 270){
+                x = rect.x + rect.width - baseLineWidth
+                y = rect.y + rect.height - 10
+              }else{
+                x = rect.x + rect.width
+                y = rect.y + rect.height - 10 - baseLineHeight
+              }
               break;
-              case boolY:
+            case corner.left === true && corner.top === true :
+              originX = 'right'
+              originY = 'top'
+              if(315 > angle && angle >= 275){
+                x = rect.x - 10 + baseLineWidth
                 y = rect.y
+              }else{
+                x = rect.x - 10
+                y = rect.y + baseLineHeight
+              }
+              break;
+            case corner.left === true && corner.bottom === true :
+              originX = 'left'
+              originY = 'top'
+              if(315 > angle && angle >= 275){
+                x = rect.x
+                y = rect.y + rect.height - baseLineHeight
+              }else{
+                x = rect.x + baseLineWidth
+                y = rect.y + rect.height
+              }
               break;
               default:
             }
             break;
             default:
         }
+        setOrigin({ 
+          originX,
+          originY
+        })
         setPosition({
           width,
           height,
           x,
           y
         })
-        setOrigin({ 
-          originX,
-          originY
-        })
-        // 図形が前の基準点を軸に反転してしまう
-      },  
+      }, 
+      // リサイズ中の処理
       onmove: (event) => {
-        const box = event.target
-        const angle = box.getAttribute('data-angle');
+        const angle = event.target.getAttribute('data-angle');
         //  角度によって、リサイズする向きを変更
         switch(true){
           case 45 > angle || angle >= 315:
@@ -189,6 +314,7 @@ export const useInteractJS = () => {
             width += -(event.deltaRect.height) / 5
             height += -(event.deltaRect.width) / 5
           break;
+          default:
         }
         // 最小サイズ
           width = 5 > width ? 5 : width
@@ -200,8 +326,6 @@ export const useInteractJS = () => {
           height,
         })
       },
-      onend: (event) => {
-      }
     })
 
     // 回転処理 //
@@ -232,7 +356,6 @@ export const useInteractJS = () => {
     
     const dragOnStart = (event) =>{
       const box = event.target.parentElement;
-
       const rect = box.getBoundingClientRect();      
       originX = 'center'
       originY = 'center'
@@ -245,6 +368,7 @@ export const useInteractJS = () => {
       box.setAttribute('data-center-y', rect.top + rect.height / 2);    
       // スタート時の角度保存
       box.setAttribute('data-angle', getDragAngle(event));
+      // 基準点に合わせてポジションを修正
       x = rect.x - 5 + rect.width / 2 
       y = rect.y - 5 + rect.height / 2
       setPosition({
@@ -261,34 +385,31 @@ export const useInteractJS = () => {
     }
     
     const dragOnEnd = async(event) => {
-      const box = event.target.parentElement;
       const angle = getDragAngle(event);
-      box.setAttribute('data-angle', angle);
-      // 角度によってエッジの向きを変更
+      event.target.parentElement.setAttribute('data-angle', angle);
+      // 角度によってコーナーの向きを変更
       switch(true){
         case 45 > angle || angle >= 315:
-        setEdges(box,Left,Right,Top,Bottom)
+        setCorners(Left,Right,Top,Bottom)
         break;
         case 135 > angle && angle >= 45:
-          setEdges(box,Top,Bottom,Right,Left)
+        setCorners(Top,Bottom,Right,Left)
         break;
         case 225 > angle && angle >= 135:
-          setEdges(box,Right,Left,Bottom,Top)
+          setCorners(Right,Left,Bottom,Top)
         break;
         case 315 > angle && angle >= 225:
-          setEdges(box,Bottom,Top,Left,Right)
+          setCorners(Bottom,Top,Left,Right)
         break;
         default:
-          setEdges(box,Left,Right,Top,Bottom)
+          setCorners(Left,Right,Top,Bottom)
       }
       // interact.jsをリセット
       setEnable(false)
     }
     const getDragAngle = (event) => {
     const box = event.target.parentElement;
-    // 保存した角度を取得
     const startAngle = parseFloat(box.getAttribute('data-angle')) || 0;
-    // 座標を取得
     const center = {
       x: parseFloat(box.getAttribute('data-center-x')) || 0,
       y: parseFloat(box.getAttribute('data-center-y')) || 0
@@ -306,11 +427,13 @@ export const useInteractJS = () => {
     }
     return degree
     }
-    const setEdges = (box,left,right,top,bottom) => {
-      box.setAttribute('edges-left', left);
-      box.setAttribute('edges-right',right);
-      box.setAttribute('edges-top', top);
-      box.setAttribute('edges-bottom', bottom);
+    const setCorners = (left,right,top,bottom) => {
+      setCorner({
+        left,
+        right,
+        top,
+        bottom
+      })
     }
   }
   
@@ -338,20 +461,14 @@ return {
   refRotate_4: rotateBtn_4 ,
   styleBox: {
     transform: `translate3D(${_position.x}px, ${_position.y}px, 0) rotate(${angle}deg) scale(${_position.width},${_position.height})`,
-    // width: _position.width + 'px',
-    // height: _position.height + 'px',
     position: 'absolute',
     transformOrigin: `${_origin.originX} ${_origin.originY}`
   },
   styleResize: {
     transform: 'scale(0.1,0.1)',
-    // outline: '2px solid #4EA0EC',
-    // backgroundColor:'#ffffff'
   },
   styleRotate: {
     transform: `scale(0.1,0.1)`,
-    // outline: '2px solid #4EA0EC',
-    // backgroundColor:'#ffffff',
   },
   isEnabled,
   enable: () => setEnable(true),

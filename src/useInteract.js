@@ -2,10 +2,10 @@ import { useRef, useEffect, useState } from 'react'
 import interact from 'interactjs'
 
 export const useInteractJS = () => {
-  const Left = '#resize_upperLeft,#resize_lowerLeft'
-  const Right = '#resize_upperRight,#resize_lowerRight'
-  const Top = '#resize_upperLeft,#resize_upperRight'
-  const Bottom = '#resize_lowerRight,#resize_lowerLeft'
+  const Left = '#resize_upperLeft,#resize_lowerLeft,#resize_Left'
+  const Right = '#resize_upperRight,#resize_lowerRight,#resize_Right'
+  const Top = '#resize_upperLeft,#resize_upperRight,#resize_Top'
+  const Bottom = '#resize_lowerRight,#resize_lowerLeft,#resize_Bottom'
 
   const [_position,setPosition] = useState({
     x: 500,
@@ -82,11 +82,12 @@ export const useInteractJS = () => {
             baseLineHeight = baseLineHeight > 0 ? baseLineHeight : -(baseLineHeight)
         let baseLineWidth = clientWidth * Math.cos(radian)      
             baseLineWidth = baseLineWidth > 0 ? baseLineWidth : -(baseLineWidth)
+        console.log(corner)
 
         switch(true){
         case 45 > angle || angle >= 315:
           switch(true){
-            case corner.right === true && corner.top === true :
+            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
               originX = 'left'
               originY = 'bottom'
               if(45 > angle){
@@ -97,7 +98,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10
               }
               break;
-            case corner.right === true && corner.bottom === true :
+            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
               originX = 'left'
               originY = 'top'
               if(45 > angle){
@@ -108,7 +109,7 @@ export const useInteractJS = () => {
                 y = rect.y + heightLineWidth
               }
               break;
-            case corner.left === true && corner.top === true :
+            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
               originX = 'right'
               originY = 'bottom'
               if(45 > angle){
@@ -119,7 +120,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10 - heightLineWidth
               }
               break;
-            case corner.left === true && corner.bottom === true :
+            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false  :
               originX = 'right'
               originY = 'top'
               if(45 > angle){
@@ -135,7 +136,7 @@ export const useInteractJS = () => {
         break;
         case 135 > angle && angle >= 45:
           switch(true){
-          case corner.right === true && corner.top === true:
+          case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false:
             originX = 'left'
             originY = 'top'
             if(135 > angle && angle >= 90){
@@ -146,7 +147,7 @@ export const useInteractJS = () => {
               y = rect.y
             }
             break;
-          case corner.right === true && corner.bottom === true :
+          case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
             originX = 'right'
             originY = 'top'
             if(135 > angle && angle >= 90){
@@ -157,7 +158,7 @@ export const useInteractJS = () => {
               y = rect.y + rect.height - baseLineHeight
             }
             break;
-          case corner.left === true && corner.top === true :
+          case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
             originX = 'left'
             originY = 'bottom'
             if(135 > angle && angle >= 90){
@@ -168,7 +169,7 @@ export const useInteractJS = () => {
               y = rect.y - 10 + baseLineHeight
             }
             break;
-          case corner.left === true && corner.bottom === true :
+          case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false :
             originX = 'right'
             originY = 'bottom'
             if(135 > angle && angle >= 90){
@@ -184,7 +185,7 @@ export const useInteractJS = () => {
         break
         case 225 > angle && angle >= 135:
           switch(true){
-            case corner.right === true && corner.top === true :
+            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
               originX = 'right'
               originY = 'top'
               if(225 > angle && angle > 180){
@@ -195,7 +196,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height
               }
               break;
-            case corner.right === true && corner.bottom === true :
+            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
               originX = 'right'
               originY = 'bottom'
               if(225 > angle && angle > 180){
@@ -206,7 +207,7 @@ export const useInteractJS = () => {
                 y = rect.y - 10 + heightLineWidth
               }
               break;
-            case corner.left === true && corner.top === true :
+            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
               originX = 'left'
               originY = 'top'
               if(225 > angle && angle > 180){
@@ -217,7 +218,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - heightLineWidth
               }
               break;
-            case corner.left === true && corner.bottom === true :
+            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false :
               originX = 'left'
               originY = 'bottom'
               if(225 > angle && angle > 180){
@@ -233,7 +234,7 @@ export const useInteractJS = () => {
         break;
         case 315 > angle && angle >= 225:
           switch(true){
-            case corner.right === true && corner.top === true :
+            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
               originX = 'right'
               originY = 'bottom'
               if(315 > angle && angle >= 275){
@@ -244,7 +245,7 @@ export const useInteractJS = () => {
                 y = rect.y - 10
               }
               break;
-            case corner.right === true && corner.bottom === true :
+            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true:
               originX = 'left'
               originY = 'bottom'
               if(315 > angle && angle >= 270){
@@ -255,7 +256,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10 - baseLineHeight
               }
               break;
-            case corner.left === true && corner.top === true :
+            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false:
               originX = 'right'
               originY = 'top'
               if(315 > angle && angle >= 275){
@@ -266,7 +267,7 @@ export const useInteractJS = () => {
                 y = rect.y + baseLineHeight
               }
               break;
-            case corner.left === true && corner.bottom === true :
+            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false:
               originX = 'left'
               originY = 'top'
               if(315 > angle && angle >= 275){
@@ -464,10 +465,14 @@ return {
     position: 'absolute',
     transformOrigin: `${_origin.originX} ${_origin.originY}`
   },
-  styleResize: {
+  styleCorner: {
     transform: 'scale(0.1,0.1)',
   },
   styleRotate: {
+    transform: `scale(0.1,0.1)`,
+  },
+  styleEdge: {
+    position: 'absolute',
     transform: `scale(0.1,0.1)`,
   },
   isEnabled,

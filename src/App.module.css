@@ -5,27 +5,54 @@
   position: relative;
 }
 
-.resize{
+.corner{
   position: absolute;
   width: 8px;
   height: 8px;
-
 }
 
-.resize:nth-of-type(odd) {
+.corner:nth-of-type(odd) {
   left: -4px;
 }
 
-.resize:nth-of-type(even) {
+.corner:nth-of-type(even) {
   right: -4px;
 }
 
-.resize:nth-of-type(n + 3) {
+.corner:nth-of-type(n + 3) {
   bottom: -4px;
 }
 
-.resize:nth-of-type(-n + 2) {
+.corner:nth-of-type(-n + 2) {
   top: -4px;
+}
+
+.edge_left {
+  width: 8px;
+  height: 90px;
+  left: -4px;
+  top : -40px
+}
+
+.edge_right {
+  width: 8px;
+  height: 90px;
+  right: -4px;
+  top : -40px
+}
+
+.edge_top {
+  width: 90px;
+  height: 8px;
+  right: -40px;
+  top : -4px
+}
+
+.edge_bottom {
+  width: 90px;
+  height: 8px;
+  right: -40px;
+  bottom : -4px
 }
 
 .rotate{
@@ -42,10 +69,10 @@
   right: -8.3px;
 }
 
-.rotate:nth-of-type(n + 5) {
+.rotate:nth-of-type(n + 9) {
   bottom: -8.3px;
 }
 
-.rotate:nth-of-type(n + 7) {
+.rotate:nth-of-type(n + 11) {
   top: -8.3px;
 }

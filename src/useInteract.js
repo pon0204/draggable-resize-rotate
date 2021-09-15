@@ -1,12 +1,9 @@
 import { useRef, useEffect, useState } from 'react'
 import interact from 'interactjs'
+import { getBoolEdgeLeftBottom, getBoolEdgeLeftTop, getBoolEdgeRightBottom, getBoolEdgeRightTop } from './function'
+import { Bottom, Left, Right, Top } from './constant'
 
-export const useInteractJS = () => {
-  const Left = '#resize_upperLeft,#resize_lowerLeft,#resize_Left'
-  const Right = '#resize_upperRight,#resize_lowerRight,#resize_Right'
-  const Top = '#resize_upperLeft,#resize_upperRight,#resize_Top'
-  const Bottom = '#resize_lowerRight,#resize_lowerLeft,#resize_Bottom'
-
+export const useInteractJS = () => {  
   const [_position,setPosition] = useState({
     x: 500,
     y: 100,
@@ -19,7 +16,7 @@ export const useInteractJS = () => {
     originY: 'center'
   })
 
-  const [_corner,setCorner] = useState({
+  const [_edge,setEdge] = useState({
     left: Left,
     right: Right,
     top: Top,
@@ -34,11 +31,10 @@ export const useInteractJS = () => {
   const rotateBtn_2 = useRef(null)
   const rotateBtn_3 = useRef(null)
   const rotateBtn_4 = useRef(null)
-  
 
   let { x, y, width, height } = _position
   let { originX,originY} = _origin
-  let {left,right,top,bottom} = _corner
+  let {left,right,top,bottom} = _edge
 
   const enable = () => {
     // 並進 //
@@ -59,21 +55,22 @@ export const useInteractJS = () => {
     .resizable({
       // リサイズする向きを角度によって変更
       edges: { 
-        left:  left,
+        left: left,
         right: right,
         top: top,
         bottom: bottom
       },
       // リサイズ開始時
-      // 「処理の流れ】 リサイズの開始位置を取得 → 基準点を変更 → 基準点に合わせてポジションを修正
+      // 「処理の流れ】 リサイズ時のポインタ位置を取得 → 基準点を変更 → 基準点に合わせてポジションを修正
       onstart: (event) => {
         const box = event.target
-        const corner = event.edges
+        const edges = event.edges
         const rect = box.getBoundingClientRect();  
         const angle = box.getAttribute('data-angle');
         const clientWidth = width * 10
         const clientHight = height * 10
         const radian = angle * ( Math.PI / 180 );
+        // 角度で底辺と高さを計算
         let heightLineHeight = clientHight * Math.sin(radian)
             heightLineHeight = heightLineHeight > 0 ? heightLineHeight : -(heightLineHeight)
         let heightLineWidth = clientWidth * Math.sin(radian)        
@@ -82,12 +79,11 @@ export const useInteractJS = () => {
             baseLineHeight = baseLineHeight > 0 ? baseLineHeight : -(baseLineHeight)
         let baseLineWidth = clientWidth * Math.cos(radian)      
             baseLineWidth = baseLineWidth > 0 ? baseLineWidth : -(baseLineWidth)
-        console.log(corner)
 
         switch(true){
         case 45 > angle || angle >= 315:
           switch(true){
-            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
+            case getBoolEdgeRightTop(edges) :
               originX = 'left'
               originY = 'bottom'
               if(45 > angle){
@@ -98,7 +94,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10
               }
               break;
-            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
+            case getBoolEdgeRightBottom(edges) :
               originX = 'left'
               originY = 'top'
               if(45 > angle){
@@ -109,7 +105,7 @@ export const useInteractJS = () => {
                 y = rect.y + heightLineWidth
               }
               break;
-            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
+            case getBoolEdgeLeftTop(edges) :
               originX = 'right'
               originY = 'bottom'
               if(45 > angle){
@@ -120,7 +116,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10 - heightLineWidth
               }
               break;
-            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false  :
+            case getBoolEdgeLeftBottom(edges) :
               originX = 'right'
               originY = 'top'
               if(45 > angle){
@@ -136,67 +132,67 @@ export const useInteractJS = () => {
         break;
         case 135 > angle && angle >= 45:
           switch(true){
-          case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false:
-            originX = 'left'
-            originY = 'top'
-            if(135 > angle && angle >= 90){
-              x = rect.x + rect.width
-              y = rect.y + baseLineHeight
-            }else{
-              x = rect.x + rect.width - baseLineWidth 
-              y = rect.y
-            }
-            break;
-          case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
-            originX = 'right'
-            originY = 'top'
-            if(135 > angle && angle >= 90){
-              x = rect.x + rect.width - 10 - baseLineWidth
-              y = rect.y + rect.height
-            }else{
-              x = rect.x + rect.width - 10
-              y = rect.y + rect.height - baseLineHeight
-            }
-            break;
-          case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
-            originX = 'left'
-            originY = 'bottom'
-            if(135 > angle && angle >= 90){
-              x = rect.x + baseLineWidth
-              y = rect.y - 10
-            }else{
-              x = rect.x
-              y = rect.y - 10 + baseLineHeight
-            }
-            break;
-          case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false :
-            originX = 'right'
-            originY = 'bottom'
-            if(135 > angle && angle >= 90){
-              x = rect.x - 10
-              y = rect.y + rect.height - 10 - baseLineHeight
-            }else{
-              x = rect.x - 10 + baseLineWidth
-              y = rect.y + rect.height - 10
-            }
+            case getBoolEdgeRightTop(edges) : 
+              originX = 'left'
+              originY = 'top'
+              if(135 > angle && angle >= 90){
+                x = rect.x + rect.width
+                y = rect.y + baseLineHeight
+              }else{
+                x = rect.x + rect.width - baseLineWidth 
+                y = rect.y
+              }
+              break;
+              case getBoolEdgeRightBottom(edges) :
+              originX = 'right'
+              originY = 'top'
+              if(135 > angle && angle >= 90){
+                x = rect.x + rect.width - 10 - baseLineWidth
+                y = rect.y + rect.height
+              }else{
+                x = rect.x + rect.width - 10
+                y = rect.y + rect.height - baseLineHeight
+              }
+              break;
+              case getBoolEdgeLeftTop(edges):
+              originX = 'left'
+              originY = 'bottom'
+              if(135 > angle && angle >= 90){
+                x = rect.x + baseLineWidth
+                y = rect.y - 10
+              }else{
+                x = rect.x
+                y = rect.y - 10 + baseLineHeight
+              }
+              break;
+              case getBoolEdgeLeftBottom(edges) :
+              originX = 'right'
+              originY = 'bottom'
+              if(135 > angle && angle >= 90){
+                x = rect.x - 10
+                y = rect.y + rect.height - 10 - baseLineHeight
+              }else{
+                x = rect.x - 10 + baseLineWidth
+                y = rect.y + rect.height - 10
+              }
             break;
             default:
           }
         break
         case 225 > angle && angle >= 135:
           switch(true){
-            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
+            case getBoolEdgeRightTop(edges) :
               originX = 'right'
               originY = 'top'
               if(225 > angle && angle > 180){
-                  x = rect.x - 10
-                  y = rect.y + rect.height - heightLineWidth
+                x = rect.x - 10
+                y = rect.y + rect.height - heightLineWidth
               }else{
                 x = rect.x - 10 + heightLineHeight
                 y = rect.y + rect.height
               }
               break;
-            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true :
+              case getBoolEdgeRightBottom(edges):
               originX = 'right'
               originY = 'bottom'
               if(225 > angle && angle > 180){
@@ -207,7 +203,7 @@ export const useInteractJS = () => {
                 y = rect.y - 10 + heightLineWidth
               }
               break;
-            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false :
+              case getBoolEdgeLeftTop(edges) :
               originX = 'left'
               originY = 'top'
               if(225 > angle && angle > 180){
@@ -218,7 +214,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - heightLineWidth
               }
               break;
-            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false :
+              case getBoolEdgeLeftBottom(edges):
               originX = 'left'
               originY = 'bottom'
               if(225 > angle && angle > 180){
@@ -234,7 +230,7 @@ export const useInteractJS = () => {
         break;
         case 315 > angle && angle >= 225:
           switch(true){
-            case corner.right === true && corner.top === true || corner.right === true && corner.top === false && corner.left === false && corner.bottom === false :
+            case getBoolEdgeRightTop(edges) :
               originX = 'right'
               originY = 'bottom'
               if(315 > angle && angle >= 275){
@@ -245,7 +241,7 @@ export const useInteractJS = () => {
                 y = rect.y - 10
               }
               break;
-            case corner.right === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === false && corner.bottom === true:
+              case getBoolEdgeRightBottom(edges):
               originX = 'left'
               originY = 'bottom'
               if(315 > angle && angle >= 270){
@@ -256,7 +252,7 @@ export const useInteractJS = () => {
                 y = rect.y + rect.height - 10 - baseLineHeight
               }
               break;
-            case corner.left === true && corner.top === true || corner.right === false && corner.top === true && corner.left === false && corner.bottom === false:
+              case getBoolEdgeLeftTop(edges):
               originX = 'right'
               originY = 'top'
               if(315 > angle && angle >= 275){
@@ -267,7 +263,7 @@ export const useInteractJS = () => {
                 y = rect.y + baseLineHeight
               }
               break;
-            case corner.left === true && corner.bottom === true || corner.right === false && corner.top === false && corner.left === true && corner.bottom === false:
+              case getBoolEdgeLeftBottom(edges) :
               originX = 'left'
               originY = 'top'
               if(315 > angle && angle >= 275){
@@ -388,22 +384,22 @@ export const useInteractJS = () => {
     const dragOnEnd = async(event) => {
       const angle = getDragAngle(event);
       event.target.parentElement.setAttribute('data-angle', angle);
-      // 角度によってコーナーの向きを変更
+      // 角度によってedgeの向きを変更
       switch(true){
         case 45 > angle || angle >= 315:
-        setCorners(Left,Right,Top,Bottom)
+        setEdges(Left,Right,Top,Bottom)
         break;
         case 135 > angle && angle >= 45:
-        setCorners(Top,Bottom,Right,Left)
+        setEdges(Top,Bottom,Right,Left)
         break;
         case 225 > angle && angle >= 135:
-          setCorners(Right,Left,Bottom,Top)
+          setEdges(Right,Left,Bottom,Top)
         break;
         case 315 > angle && angle >= 225:
-          setCorners(Bottom,Top,Left,Right)
+          setEdges(Bottom,Top,Left,Right)
         break;
         default:
-          setCorners(Left,Right,Top,Bottom)
+          setEdges(Left,Right,Top,Bottom)
       }
       // interact.jsをリセット
       setEnable(false)
@@ -416,8 +412,7 @@ export const useInteractJS = () => {
       y: parseFloat(box.getAttribute('data-center-y')) || 0
     };
     // radian計算
-    const radian = Math.atan2(center.y - event.clientY,
-      center.x - event.clientX);
+    const radian = Math.atan2(center.y - event.clientY,center.x - event.clientX);
     // 角度に変換
     let degree = radian * ( 180 / Math.PI ) ;
     degree -= startAngle
@@ -428,8 +423,9 @@ export const useInteractJS = () => {
     }
     return degree
     }
-    const setCorners = (left,right,top,bottom) => {
-      setCorner({
+    
+    const setEdges = (left,right,top,bottom) => {
+      setEdge({
         left,
         right,
         top,
@@ -454,29 +450,18 @@ export const useInteractJS = () => {
     return disable
   },[])
 
-return {
-  ref: interactRef,
-  refRotate_1: rotateBtn_1,
-  refRotate_2: rotateBtn_2,
-  refRotate_3: rotateBtn_3,
-  refRotate_4: rotateBtn_4 ,
-  styleBox: {
-    transform: `translate3D(${_position.x}px, ${_position.y}px, 0) rotate(${angle}deg) scale(${_position.width},${_position.height})`,
-    position: 'absolute',
-    transformOrigin: `${_origin.originX} ${_origin.originY}`
-  },
-  styleCorner: {
-    transform: 'scale(0.1,0.1)',
-  },
-  styleRotate: {
-    transform: `scale(0.1,0.1)`,
-  },
-  styleEdge: {
-    position: 'absolute',
-    transform: `scale(0.1,0.1)`,
-  },
-  isEnabled,
-  enable: () => setEnable(true),
-  disable: () => setEnable(false)
-}
+  return {
+    ref: interactRef,
+    refRotate_1: rotateBtn_1,
+    refRotate_2: rotateBtn_2,
+    refRotate_3: rotateBtn_3,
+    refRotate_4: rotateBtn_4 ,
+    styleBox: {
+      transform: `translate3D(${_position.x}px, ${_position.y}px, 0) rotate(${angle}deg) scale(${_position.width},${_position.height})`,
+      transformOrigin: `${_origin.originX} ${_origin.originY}`
+    },
+    isEnabled,
+    enable: () => setEnable(true),
+    disable: () => setEnable(false)
+  }
 }

@@ -1,35 +1,72 @@
 .box{
+  position: absolute;
+  width: 10px;
+  height: 10px;
   background-color: #C4C4C4;
-  min-width: 10px;
-  min-height: 10px;
-  position: relative;
 }
 
-.resize{
+.corner{
   position: absolute;
+  transform: scale(0.1,0.1);
   width: 8px;
   height: 8px;
-
 }
 
-.resize:nth-of-type(odd) {
+.corner:nth-of-type(odd) {
   left: -4px;
 }
 
-.resize:nth-of-type(even) {
+.corner:nth-of-type(even) {
   right: -4px;
 }
 
-.resize:nth-of-type(n + 3) {
+.corner:nth-of-type(n + 3) {
   bottom: -4px;
 }
 
-.resize:nth-of-type(-n + 2) {
+.corner:nth-of-type(-n + 2) {
   top: -4px;
+}
+
+.edge_left {
+  position: absolute;
+  transform: scale(0.1,0.1);
+  width: 8px;
+  height: 90px;
+  left: -4px;
+  top : -40px;
+}
+
+.edge_right {
+  position: absolute;
+  transform: scale(0.1,0.1);
+  width: 8px;
+  height: 90px;
+  right: -4px;
+  top : -40px;
+}
+
+.edge_top {
+  position: absolute;
+  transform: scale(0.1,0.1);
+  width: 90px;
+  height: 8px;
+  right: -40px;
+  top : -4px;
+}
+
+.edge_bottom {
+  position: absolute;
+  transform: scale(0.1,0.1);
+  width: 90px;
+  height: 8px;
+  right: -40px;
+  bottom : -4px;
 }
 
 .rotate{
   position: absolute;
+  transform: scale(0.1,0.1);
   width: 15px;
   height: 15px;
 }
@@ -42,10 +79,10 @@
   right: -8.3px;
 }
 
-.rotate:nth-of-type(n + 5) {
+.rotate:nth-of-type(n + 9) {
   bottom: -8.3px;
 }
 
-.rotate:nth-of-type(n + 7) {
+.rotate:nth-of-type(n + 11) {
   top: -8.3px;
 }

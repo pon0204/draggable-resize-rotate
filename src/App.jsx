@@ -13,24 +13,27 @@ const App = () => {
   return (
     <div onClick={(e) => onClose(e)} style={{height: '100vh'}}>
       <div
-        onMouseEnter={() => interact.enable()}
         ref={interact.ref}
+        onMouseEnter={() => interact.enable()}
+        className={styles.box}
         style={{
           ...interact.styleBox,
-          // outline: interact.isEnabled && '2px solid #4EA0EC'
         }}
-        className={styles.box}
         >
         {interact.isEnabled &&
         <>
-          <div className={styles.resize} id='resize_upperLeft' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_upperRight' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_lowerLeft' style={{...interact.styleResize}}></div>
-          <div className={styles.resize} id='resize_lowerRight' style={{...interact.styleResize}}></div>
-          <div ref={interact.refRotate_1} className={styles.rotate} style={{...interact.styleRotate}}></div>
-          <div ref={interact.refRotate_2} className={styles.rotate} style={{...interact.styleRotate}}></div>
-          <div ref={interact.refRotate_3} className={styles.rotate} style={{...interact.styleRotate}}></div>
-          <div ref={interact.refRotate_4} className={styles.rotate} style={{...interact.styleRotate}}></div>
+          <div className={styles.corner} id='resize_upperLeft'></div>
+          <div className={styles.corner} id='resize_upperRight'></div>
+          <div className={styles.corner} id='resize_lowerLeft'></div>
+          <div className={styles.corner} id='resize_lowerRight'></div>
+          <div className={styles.edge_left} id='resize_Left'></div>
+          <div className={styles.edge_right} id='resize_Right'></div>
+          <div className={styles.edge_top} id='resize_Top'></div>
+          <div className={styles.edge_bottom} id='resize_Bottom'></div>
+          <div className={styles.rotate} ref={interact.refRotate_1} ></div>
+          <div className={styles.rotate} ref={interact.refRotate_2} ></div>
+          <div className={styles.rotate} ref={interact.refRotate_3} ></div>
+          <div className={styles.rotate} ref={interact.refRotate_4} ></div>
         </>
         }
       </div>  
